@@ -1,5 +1,35 @@
-<script lang="js">
+<script lang="ts" setup>
+import type { Register } from '@/interfaces/auth.interface'
+import { reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
+import type { VForm } from 'vuetify/components'
+
+const register = reactive<Register>({
+  username: '',
+  password: '',
+  confirmPassword: '',
+})
+
+const rules = {
+  required: (v: string) => !!v || 'Este campo es obligatorio.',
+  minLength: (v: string) => v.length >= 3 || 'La contraseña debe tener al menos 3 caracteres.',
+  matchPassword: () =>
+    register.password === register.confirmPassword || 'Las contraseñas no coinciden.',
+}
+
+const form = ref<VForm | null>(null)
+
+const submit = async () => {
+  await form.value?.validate()
+  if (!form.value?.isValid) return
+  try {
+    console.log('Registrando usuario:', register)
+    // Aquí iría la lógica para enviar los datos al servidor
+  } catch (error) {
+    console.error('Error al registrar:', error)
+  }
+  console.log('Formulario de registro válido:', register)
+}
 </script>
 
 <template>
@@ -10,28 +40,45 @@ import { RouterLink } from 'vue-router'
           <v-card-title class="text-center">
             <v-icon size="36">mdi-account-circle</v-icon>
             <div class="mt-2">Crear Cuenta</div>
-            <v-form>
-              <v-card-text>
-                <v-text-field label="Usuarios" type="text" required prepend-icon="mdi-account" />
-                <v-text-field label="Contraseña" type="password" required prepend-icon="mdi-lock" />
-                <v-text-field
-                  label="Confirmar Contraseña"
-                  type="password"
-                  required
-                  prepend-icon="mdi-lock-check"
-                />
-              </v-card-text>
-              <v-card-actions class="justify-center">
-                <v-btn color="primary" class="mt-4" block>Registrar</v-btn>
-              </v-card-actions>
-            </v-form>
-            <v-card-actions class="justify-center">
-              <span class="text-caption">¿Ya tienes una cuenta?</span>
-              <RouterLink :to="{ name: 'login' }" class="text-decoration:none">
-                <span class="text-caption">Iniciar Sesión</span>
-              </RouterLink>
-            </v-card-actions>
           </v-card-title>
+          <v-form ref="form" lazy-validation @submit.prevent="submit">
+            <v-card-text>
+              <v-text-field
+                v-model="register.username"
+                label="Usuarios"
+                type="text"
+                required
+                prepend-icon="mdi-account"
+                :rules="[rules.required, rules.minLength]"
+              />
+              <v-text-field
+                v-model="register.password"
+                label="Contraseña"
+                type="password"
+                required
+                prepend-icon="mdi-lock"
+                :rules="[rules.required, rules.minLength]"
+              />
+              <v-text-field
+                v-model="register.confirmPassword"
+                label="Confirmar Contraseña"
+                type="password"
+                required
+                prepend-icon="mdi-lock-check"
+                :rules="[rules.required, rules.matchPassword]"
+              />
+            </v-card-text>
+            <v-card-actions class="justify-center">
+              <v-btn color="primary" class="mt-4" block>Registrar</v-btn>
+            </v-card-actions>
+          </v-form>
+          <v-card-actions class="justify-center">
+            <span class="text-caption">¿Ya tienes una cuenta?</span>
+            <RouterLink :to="{ name: 'login' }" class="text-decoration:none">
+              <span class="text-caption">Iniciar Sesión</span>
+            </RouterLink>
+          </v-card-actions>
+
           <v-card-text> </v-card-text>
         </v-card>
       </v-col>
