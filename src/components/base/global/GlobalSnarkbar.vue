@@ -1,13 +1,25 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { useAlert } from '@/composables/useAlert'
+const { state, close } = useAlert()
+</script>
+S
 
 <template>
-  <v-snackbar>
+  <v-snackbar
+    :model-value="state.show"
+    @update:model-value="close"
+    :color="state.type"
+    timeout="5000"
+    location="top right"
+    elevation="20"
+  >
     <div>
-      <v-icon start icon="mdi-information-outline"> This is a global snackbar message. </v-icon>
+      <v-icon start icon="mdi-information-outline" />
+      {{ state.message }}
     </div>
 
     <template #actions>
-      <v-btn variant="text" icon="mdi-close">Close</v-btn>
+      <v-btn variant="text" icon="mdi-close" @click="close"></v-btn>
     </template>
   </v-snackbar>
 </template>

@@ -1,8 +1,11 @@
 <script lang="ts" setup>
+import { useAlert } from '@/composables/useAlert'
 import type { Register } from '@/interfaces/auth.interface'
 import { reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { VForm } from 'vuetify/components'
+
+const { open } = useAlert()
 
 const register = reactive<Register>({
   username: '',
@@ -11,7 +14,7 @@ const register = reactive<Register>({
 })
 
 const rules = {
-  required: (v: string) => !!v || 'Este campo es obligatorio.',
+  required: (v: string) => (!!v && v.trim() !== '') || 'Este campo es obligatorio.',
   minLength: (v: string) => v.length >= 3 || 'La contraseña debe tener al menos 3 caracteres.',
   matchPassword: () =>
     register.password === register.confirmPassword || 'Las contraseñas no coinciden.',
@@ -23,12 +26,14 @@ const submit = async () => {
   await form.value?.validate()
   if (!form.value?.isValid) return
   try {
-    console.log('Registrando usuario:', register)
+    console.log('Registrando usuario:')
+    open('Registro exitoso', 'success')
     // Aquí iría la lógica para enviar los datos al servidor
   } catch (error) {
     console.error('Error al registrar:', error)
+    open('Error al registrar el usuario', 'error')
   }
-  console.log('Formulario de registro válido:', register)
+  console.log('Formulario de registro válido:')
 }
 </script>
 
@@ -69,7 +74,7 @@ const submit = async () => {
               />
             </v-card-text>
             <v-card-actions class="justify-center">
-              <v-btn color="primary" class="mt-4" block>Registrar</v-btn>
+              <v-btn color="primary" class="mt-4" block type="submit">Registrar</v-btn>
             </v-card-actions>
           </v-form>
           <v-card-actions class="justify-center">
