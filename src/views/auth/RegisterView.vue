@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 import { useAlert } from '@/composables/useAlert'
+import { useRequest } from '@/composables/useRequest'
 import type { Register } from '@/interfaces/auth.interface'
+import { AuthService } from '@/services/auth.services'
 import { reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { VForm } from 'vuetify/components'
 
 const { open } = useAlert()
+const { run, error, loading } = useRequest()
 
 const register = reactive<Register>({
   username: '',
@@ -26,12 +29,18 @@ const submit = async () => {
   await form.value?.validate()
   if (!form.value?.isValid) return
   try {
+    await run(() =>
+      AuthService.register({
+        username: register.username,
+        password: register.password,
+      }),
+    )
     console.log('Registrando usuario:')
     open('Registro exitoso', 'success')
     // Aquí iría la lógica para enviar los datos al servidor
-  } catch (error) {
+  } catch {
     console.error('Error al registrar:', error)
-    open('Error al registrar el usuario', 'error')
+    open(error.value ?? 'Error al registrar el usuario', 'error')
   }
   console.log('Formulario de registro válido:')
 }
@@ -74,7 +83,9 @@ const submit = async () => {
               />
             </v-card-text>
             <v-card-actions class="justify-center">
-              <v-btn color="primary" class="mt-4" block type="submit">Registrar</v-btn>
+              <v-btn color="primary" class="mt-4" block :loading="loading" type="submit"
+                >Registrar</v-btn
+              >
             </v-card-actions>
           </v-form>
           <v-card-actions class="justify-center">

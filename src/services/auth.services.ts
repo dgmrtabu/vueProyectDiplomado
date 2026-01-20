@@ -1,0 +1,14 @@
+import api from '@/api/axios'
+import type { Credentials } from '@/interfaces/auth.interfaces'
+
+export const AuthService = {
+  async register(payload: Credentials) {
+    const { data } = await api.post('/users', payload)
+    return data
+  },
+
+  async login(payload: Credential) {
+    const { data } = await api.post('/login', payload)
+    return data
+  },
+}
