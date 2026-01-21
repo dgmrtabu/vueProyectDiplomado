@@ -3,7 +3,7 @@ import { useAlert } from '@/composables/useAlert'
 import { useRequest } from '@/composables/useRequest'
 import type { Register } from '@/interfaces/auth.interface'
 import router from '@/router'
-import { AuthService } from '@/services/auth.services'
+import { AutheService } from '@/services/auth.services'
 import { reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { VForm } from 'vuetify/components'
@@ -25,7 +25,7 @@ const submit = async () => {
   if (!form.value?.isValid) return
   try {
     await run(() =>
-      AuthService.register({
+      AutheService.register({
         username: register.username,
         password: register.password,
       }),
