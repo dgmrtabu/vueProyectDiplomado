@@ -6,3 +6,15 @@ export interface Credentials {
 export interface Register extends Credentials {
   confirmPassword: string
 }
+export interface User {
+  username: string
+}
+
+export interface Login {
+  user: User,
+  token: string
+} 
+
+export interface ResponseLogin {
+  token: string
+}

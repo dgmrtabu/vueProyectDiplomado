@@ -2,10 +2,12 @@
 import { useAlert } from '@/composables/useAlert'
 import { useRequest } from '@/composables/useRequest'
 import type { Register } from '@/interfaces/auth.interface'
+import router from '@/router'
 import { AuthService } from '@/services/auth.services'
 import { reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { VForm } from 'vuetify/components'
+import { rules } from '@/tools/rules'
 
 const { open } = useAlert()
 const { run, error, loading } = useRequest()
@@ -15,13 +17,6 @@ const register = reactive<Register>({
   password: '',
   confirmPassword: '',
 })
-
-const rules = {
-  required: (v: string) => (!!v && v.trim() !== '') || 'Este campo es obligatorio.',
-  minLength: (v: string) => v.length >= 3 || 'La contraseña debe tener al menos 3 caracteres.',
-  matchPassword: () =>
-    register.password === register.confirmPassword || 'Las contraseñas no coinciden.',
-}
 
 const form = ref<VForm | null>(null)
 
@@ -37,6 +32,7 @@ const submit = async () => {
     )
     console.log('Registrando usuario:')
     open('Registro exitoso', 'success')
+    router.push({ name: 'login' })
     // Aquí iría la lógica para enviar los datos al servidor
   } catch {
     console.error('Error al registrar:', error)
@@ -79,7 +75,7 @@ const submit = async () => {
                 type="password"
                 required
                 prepend-icon="mdi-lock-check"
-                :rules="[rules.required, rules.matchPassword]"
+                :rules="[rules.required, rules.matchPassword(register.password, register.confirmPassword)]"
               />
             </v-card-text>
             <v-card-actions class="justify-center">
