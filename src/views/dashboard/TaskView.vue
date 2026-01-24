@@ -96,6 +96,7 @@ const saveTask = async () => {
       await runSave(() => AutheService.createTask({ name }))
       open('Tarea creada', 'success')
     } else if (taskId.value !== null) {
+      const id = taskId.value
       const payload: Partial<{ name: string; done: boolean }> = {}
       if (name !== originalName.value) payload.name = name
       if (taskDone.value !== originalDone.value) payload.done = taskDone.value
@@ -103,7 +104,7 @@ const saveTask = async () => {
         createDialog.value = false
         return
       }
-      await runSave(() => AutheService.patchTask(taskId.value, payload))
+      await runSave(() => AutheService.patchTask(id, payload))
       open('Tarea actualizada', 'success')
     }
     createDialog.value = false

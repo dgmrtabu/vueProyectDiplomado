@@ -7,7 +7,7 @@ export const AutheService = {
     return data
   },
 
-  async login(payload: Credential) {
+  async login(payload: Credentials) {
     const { data } = await api.post('/login', payload)
     return data
   },
