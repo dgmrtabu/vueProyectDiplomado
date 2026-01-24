@@ -25,6 +25,9 @@ const taskDone = ref(false)
 const originalName = ref('')
 const originalDone = ref(false)
 const currentPage = ref(1)
+const deleteDialog = ref(false)
+const deleteTaskId = ref<number | null>(null)
+const deleteTaskName = ref('')
 const { loading: saving, run: runSave, error: saveError } = useRequest()
 const { loading: deleting, run: runDelete, error: deleteError } = useRequest()
 const { open } = useAlert()
@@ -110,13 +113,18 @@ const saveTask = async () => {
   }
 }
 
+const openDelete = (task: Task) => {
+  deleteTaskId.value = task.id
+  deleteTaskName.value = task.name
+  deleteDialog.value = true
+}
+
 const removeTask = async () => {
-  if (taskId.value === null) return
-  if (!confirm('¿Eliminar esta tarea?')) return
+  if (deleteTaskId.value === null) return
   try {
-    await runDelete(() => AutheService.deleteTask(taskId.value as number))
+    await runDelete(() => AutheService.deleteTask(deleteTaskId.value as number))
     open('Tarea eliminada', 'success')
-    createDialog.value = false
+    deleteDialog.value = false
     refresh()
   } catch {
     if (deleteError.value) open(deleteError.value, 'error')
@@ -168,6 +176,13 @@ onMounted(() => {
           variant="text"
           @click="openEdit(item)"
         />
+        <v-btn
+          icon="mdi-delete"
+          size="small"
+          variant="text"
+          color="error"
+          @click="openDelete(item)"
+        />
       </template>
       <template #item.done="{ value }">
         <v-icon
@@ -195,18 +210,9 @@ onMounted(() => {
           autofocus
           @keyup.enter="saveTask"
         />
-        <v-checkbox v-model="taskDone" label="Completada" />
+        <v-checkbox v-if="dialogMode === 'edit'" v-model="taskDone" label="Completada" />
       </v-card-text>
-      <v-card-actions class="justify-space-between">
-        <v-btn
-          v-if="dialogMode === 'edit'"
-          color="error"
-          variant="text"
-          :loading="deleting"
-          @click="removeTask"
-        >
-          Eliminar
-        </v-btn>
+      <v-card-actions class="justify-end">
         <div class="d-flex ga-2">
           <v-btn variant="text" @click="createDialog = false">Cancelar</v-btn>
           <v-btn
@@ -218,6 +224,20 @@ onMounted(() => {
             {{ dialogMode === 'create' ? 'Guardar' : 'Actualizar' }}
           </v-btn>
         </div>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <v-dialog v-model="deleteDialog" max-width="420">
+    <v-card>
+      <v-card-title>Eliminar tarea</v-card-title>
+      <v-card-text>
+        ¿Seguro que deseas eliminar
+        <strong>{{ deleteTaskName || 'esta tarea' }}</strong>?
+        Esta acción no se puede deshacer.
+      </v-card-text>
+      <v-card-actions class="justify-end">
+        <v-btn variant="text" @click="deleteDialog = false">Cancelar</v-btn>
+        <v-btn color="error" :loading="deleting" @click="removeTask">Eliminar</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
