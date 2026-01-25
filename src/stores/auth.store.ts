@@ -3,6 +3,7 @@ import type { User } from "@/interfaces/auth.interface"
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
 
+
 const TOKEN = 'token'
 const USER = 'user'
 
@@ -33,4 +34,5 @@ export const useAuthStore = defineStore('auth', () => {
         login,
         logout,
     }
+
 })
