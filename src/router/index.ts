@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
         component: PerfilView,
       },
       {
-        path: '/Tasks',
+        path: '/tasks',
         name: 'tasks',
         component: TaskView,
       },
