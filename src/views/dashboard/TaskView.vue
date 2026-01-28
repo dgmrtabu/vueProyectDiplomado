@@ -104,7 +104,7 @@ const saveTask = async () => {
         createDialog.value = false
         return
       }
-      await runSave(() => AutheService.patchTask(id, payload))
+      await runSave(() => AutheService.putTask(id, payload))
       open('Tarea actualizada', 'success')
     }
     createDialog.value = false
